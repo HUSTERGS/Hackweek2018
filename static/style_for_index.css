@@ -1,0 +1,51 @@
+body {
+  /*background: #aaa;*/
+}
+
+.status_bar {
+  height: 30px;
+}
+
+.main {
+  width: 70%;
+  margin: 0 auto;
+  height: 500px;
+  background: #fff;
+}
+
+.columns {
+  width: 50%;
+  margin: 40px 0 auto auto;
+  height: 50px;
+}
+
+.columns ul {
+  list-style: none;
+  margin: 0;
+  display: block;
+}
+
+.columns ul li {
+  float: left;
+  width: 20%;
+  box-sizing: border-box;
+  border: 1px solid black;
+}
+
+.columns ul li a {
+  text-decoration: none;
+  display: block;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.main_body {
+  border: 1px solid black;
+}
+
+.head {
+  height: 50px;
+  font-size: 25px;
+}

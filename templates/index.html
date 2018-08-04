@@ -1,0 +1,82 @@
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../static/style_for_index.css">
+</head>
+
+<body>
+    <div class="status_bar">
+        status_bar
+    </div>
+    <div class="main">
+
+        <div class="pic">
+
+        </div>
+
+        <div class="columns">
+            <ul>
+                <li>
+                    <a>
+                        首页
+                    </a>
+                </li>
+                <li>
+                    <a>
+                        七嘴八舌
+                    </a>
+                </li>
+                <li>
+                    <a>
+                        一画一言
+                    </a>
+                </li>
+                <li>
+                    <a>
+                        我来说书
+                    </a>
+                </li>
+                <li>
+                    <a>
+                        我的地盘
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="main_body">
+            <div class="home page">
+                <div class="discusspart">
+                    <div class="head">七嘴八舌
+                        <div class="more">
+                            <a>更多</a>
+                        </div>
+                    </div>
+                    <div class="list"></div>
+                </div>
+                <div class="drawingpart">
+                    <div class="head">一画一言
+                        <div class="more">
+                            <a>更多</a>
+                        </div>
+                    </div>
+                    <div class="list"></div>
+                </div>
+            </div>
+            <div class="discuss page"></div>
+            <div class="drawing page"></div>
+            <div class="talking page"></div>
+            <div class="myplace page"></div>
+        </div>
+    </div>
+    <script>
+        //generate the content of home page
+        function homepage() {
+            fetch('/home', {
+                method: 'GET'
+            }).then(res => {
+                console.log(res)
+            })
+        }
+    </script>
+</body>
