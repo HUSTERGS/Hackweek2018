@@ -6,11 +6,25 @@
 </head>
 
 <body>
-    <div class="status_bar">
-        status_bar
-    </div>
-    <div class="main">
 
+    <div class="main">
+        <div class="status_bar">
+            {% if login_user %}
+            <li>
+                <a href="#">用户：{{ login_user }}</a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}">注销</a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ url_for('login') }}">登录</a>
+            </li>
+            <li>
+                <a href="{{ url_for('register') }}">注册</a>
+            </li>
+            {% endif %}
+        </div>
         <div class="pic">
 
         </div>
@@ -63,7 +77,29 @@
                     <div class="list"></div>
                 </div>
             </div>
-            <div class="discuss page"></div>
+            <div class="discuss page">
+                <div class="head">我来开个头</div>
+                <div class="inputarea">
+                    <input type="text">
+                    <input type="button" value="撤销">
+                    <input type="button" value="发布">
+                </div>
+                <div class="head">我来插个嘴</div>
+                <div class="sort">
+                    <ul class="">
+                        <li>
+                            <a>插嘴数量</a>
+                        </li>
+                        <li>
+                            <a>插嘴时间</a>
+                        </li>
+                        <li>
+                            <a>开头时间</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="list"></div>
+            </div>
             <div class="drawing page"></div>
             <div class="talking page"></div>
             <div class="myplace page"></div>
@@ -77,6 +113,10 @@
             }).then(res => {
                 console.log(res)
             })
+        }
+
+        function generateitem(data) {
+
         }
     </script>
 </body>
