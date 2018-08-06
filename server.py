@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, flash, session, redirect, url_for
 import mysql.connector
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'hackweek2018'
@@ -19,17 +20,35 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/userlogin', methods=['POST', 'GET'])  # handle the login request
+@app.route('/userregister', methods=['POST'])
+def userregister():
+    username = request.form.get('user')
+    useremail = request.form.get('email')
+    password = request.form.get('password1')
+    cursor.execute("select * from users where username = %s", (username,))
+    if (cursor.fetchall() == []):
+        cursor.execute("insert into users (username, userpw, useremail) values (%s, %s, %s)",
+                       (username, password, useremail))
+        con.commit()
+        print(username, useremail, password)
+        return redirect(url_for('userlogin'))
+    else:
+        return '该用户名已被使用'
+
+
+@app.route('/userlogin', methods=['POST'])  # handle the login request
 def userlogin():
     useremail = request.form.get('useremail')
     password = request.form.get('password')
+
     cursor.execute(
         "select * from users where useremail = %s and userpw = %s", (useremail, password))
     result = cursor.fetchall()
     if (result == []):
-        return '用户不存在或密码错误'
-        # flash('用户名不存在或密码错误')
-        # return render_template('login.html')
+        # return '用户不存在或密码错误'
+        flash('用户名不存在或密码错误')
+        return render_template("login.html", **{'useremail': "" if (useremail == None) else useremail})
+
     else:
         print(result[0][0])
         session['login_user'] = result[0][0]
@@ -41,19 +60,37 @@ def homepage():
     return render_template('index.html')
 
 
-@app.route('/ex', methods=['GET'])
-def ex():
-    flash('cdas')
-    return 'cdsacdsacdsa'
-
-
-@app.route('/logout')
+@app.route('/logout')  # logout and pop out user data
 def logout():
     session.pop('login_user', None)
     return redirect(url_for('homepage'))
 
 
-@app.context_processor
+'''@app.route('/discussdata/<sortway>', methods=['GET'])
+def discussdata(sortway):
+    if sortway == 'newest':
+        cursor.execute("")'''
+
+
+@app.route('/handledata', methods=['POST'])
+def datahandler():
+    data = request.get_data().decode()
+    auth = session.get('login_user', '')
+    time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(data, auth, time)
+    print(data)
+    cursor.execute(
+        "insert into topics (topicname, topicauth, topictime, peoplenum) values (%s, %s, %s, %s)", (data, auth, time, 1))
+    con.commit()
+    return 'cd'
+
+
+@app.route('/ex')
+def ex():
+    return session.get('login_user', '')
+
+
+@app.context_processor  # handler
 def my_context_processor():
     login_user = session.get('login_user', '')
     return {'login_user': login_user}

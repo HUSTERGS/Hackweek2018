@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="../static/style_for_login.css">
     <style>
         input[placeholder] {
             width: 388px;
@@ -30,17 +31,15 @@
             height: 40px;
         }
 
-        input[type='submit'] {
+        input[type="submit"] {
             background-color: #00a7de;
             border: 1px solid #0381aa;
             color: #fff;
         }
 
-
         .buttons {
             margin: 30px auto;
             width: 410px;
-
         }
 
         p {
@@ -58,6 +57,19 @@
         a:hover {
             color: rgb(251, 114, 153);
         }
+
+        .flash {
+            position: relative;
+            background: rgb(251, 114, 153);
+            border-radius: 4px;
+            height: 30px;
+            font-size: 10px;
+            line-height: 30px;
+            width: 150px;
+            right: -420px;
+            top: 35px;
+            padding-left: 15px;
+        }
     </style>
 </head>
 
@@ -65,8 +77,13 @@
     <div class="main">
         <p class="head">登录</p>
         <form method="POST" action='/userlogin'>
+            {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="flash">
+                {{ message[1] }}
+            </div>
+            {% endfor %}
             <label class="useremail">
-                <input type="text" name="useremail" value="" autocomplete="off" maxlength="20" placeholder="你的邮箱">
+                <input type="text" name="useremail" autocomplete="off" maxlength="20" placeholder="你的邮箱" value={{useremail}}>
             </label>
 
             <br>
@@ -84,6 +101,7 @@
             </div>
 
         </form>
+
     </div>
 
     <script>
@@ -101,7 +119,6 @@
             }
             document.querySelector("form").submit();
         }
-
 
         //register mode
         let register = document.querySelector("input[type='button']")
