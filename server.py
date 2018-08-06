@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, jsonify, flash, session, redirect, url_for
 import mysql.connector
 import datetime
+from flask_avatar import Avatar
+import json
 
 app = Flask(__name__)
 app.secret_key = 'hackweek2018'
+Avatar(app)
 
 con = mysql.connector.connect(
     user='root', password='MySQL#232', database='hackweek2018', port=3305, use_unicode=True)
@@ -31,7 +34,7 @@ def userregister():
                        (username, password, useremail))
         con.commit()
         print(username, useremail, password)
-        return redirect(url_for('userlogin'))
+        return redirect(url_for('login'))
     else:
         return '该用户名已被使用'
 
@@ -45,7 +48,6 @@ def userlogin():
         "select * from users where useremail = %s and userpw = %s", (useremail, password))
     result = cursor.fetchall()
     if (result == []):
-        # return '用户不存在或密码错误'
         flash('用户名不存在或密码错误')
         return render_template("login.html", **{'useremail': "" if (useremail == None) else useremail})
 
@@ -66,28 +68,75 @@ def logout():
     return redirect(url_for('homepage'))
 
 
-'''@app.route('/discussdata/<sortway>', methods=['GET'])
-def discussdata(sortway):
-    if sortway == 'newest':
-        cursor.execute("")'''
-
-
 @app.route('/handledata', methods=['POST'])
 def datahandler():
     data = request.get_data().decode()
     auth = session.get('login_user', '')
     time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(data, auth, time)
-    print(data)
+    #print(session.get('login_user', ''))
+    #print(data, auth, time)
+    # print(data)
     cursor.execute(
         "insert into topics (topicname, topicauth, topictime, peoplenum) values (%s, %s, %s, %s)", (data, auth, time, 1))
+    cursor.execute("create table " + time +
+                   "('time' datetime not null, 'auth' varchar(30) not null, 'content' text not null)")
     con.commit()
-    return 'cd'
+    return redirect(url_for('homepage'))
+
+
+@app.route('/discussdata/<sortway>', methods=['GET'])
+def discussdata(sortway):
+    if (sortway == 'newest'):
+        cursor.execute(
+            "select topicname, topicauth, cast(topictime as char) as topictime, peoplenum from topics order by topictime desc limit 0, 3;")
+        result = cursor.fetchall()
+        print(result)
+        number = len(result)
+        responseData = {}
+        for num in range(number):
+            responseData[num] = result[num]
+        print(responseData)
+        return jsonify(responseData)
+
+
+@app.route('/talkdata/<sortway>', methods=['GET'])
+def talkdata(sortway):
+    if (sortway == 'numest'):
+        cursor.execute(
+            "select topicname, topicauth, cast(topictime as char) as topictime, peoplenum from topics order by peoplenum desc limit 0, 3;")
+        result = cursor.fetchall()
+        print(result)
+        number = len(result)
+        responseData = {}
+        for num in range(number):
+            responseData[num] = result[num]
+        print(responseData)
+        return jsonify(responseData)
+    elif (sortway == 'newest'):
+        cursor.execute(
+            "select topicname, topicauth, cast(topictime as char) as topictime, peoplenum from topics order by topictime desc limit 0, 3;")
+        result = cursor.fetchall()
+        print(result)
+        number = len(result)
+        responseData = {}
+        for num in range(number):
+            responseData[num] = result[num]
+        print(responseData)
+        return jsonify(responseData)
 
 
 @app.route('/ex')
 def ex():
+    print(session.get('login_user', ''))
+    print(session.get('login_user', ''))
+    print(session.get('login_user', ''))
+
     return session.get('login_user', '')
+
+
+@app.route('/edite/<topic>')
+def edite(topic):
+    return render_template("editepage.html", **{'data': topic})
 
 
 @app.context_processor  # handler

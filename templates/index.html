@@ -4,6 +4,11 @@
     <meta charset="utf-8">
 
     <style>
+        .page {
+            margin-bottom: 20px;
+            display: none;
+        }
+
         .status_bar {
             height: 20px;
         }
@@ -35,6 +40,8 @@
         }
 
         .columns ul li {
+            cursor: pointer;
+            height: 50px;
             float: left;
             width: 20%;
             box-sizing: border-box;
@@ -93,11 +100,13 @@
         }
 
         .sort ul li {
+            cursor: pointer;
             float: left;
             width: 33%;
             box-sizing: border-box;
             border: 1px solid black;
-            border-bottom: 0;
+            height: 50px;
+            /*border-bottom: 0;*/
         }
 
         .sort ul li a {
@@ -134,6 +143,61 @@
             height: 30px;
             margin: 10px 0 10px 20px;
         }
+
+        .displaydrawings {
+            height: 100px;
+            border: 1px solid black;
+        }
+
+        .jsselected,
+        .jsselected2 {
+            border-bottom: 5px gray solid !important;
+        }
+
+        .shown {
+            display: inherit
+        }
+
+        .userdetail {
+            border: 1px solid black;
+            height: 105px;
+            padding-left: 35px;
+            padding-top: 35px;
+        }
+
+        .userdetail input {
+            margin-top: 55px;
+        }
+
+        .discuss_item {
+            height: 100px;
+            width: 100%;
+            display: flex;
+            border-bottom: 1px solid black;
+        }
+
+        .discuss_item img {
+            border-radius: 50%;
+            margin: 10px;
+            vertical-align: middle;
+            height: 80px;
+            width: 80px;
+        }
+
+        .discuss_item p[class] {
+            margin: 20px;
+            border: 1px solid gray;
+            height: 60px;
+        }
+
+        .discuss_item .discuss_content {
+            width: 72%;
+        }
+
+        .discuss_item_detail {
+            border: 1px solid black;
+            margin: 20px 20px 20px auto;
+        }
     </style>
 </head>
 
@@ -164,8 +228,8 @@
         </div>
 
         <div class="columns">
-            <ul>
-                <li>
+            <ul class="maincolumns">
+                <li class="jsselected">
                     <a>
                         首页
                     </a>
@@ -193,14 +257,15 @@
             </ul>
         </div>
         <div class="main_body">
-            <div class="home page">
+            <div class="home page shown">
                 <div class="discusspart">
                     <div class="head">七嘴八舌
                         <div class="more">
                             <a>更多</a>
                         </div>
                     </div>
-                    <div class="list"></div>
+                    <div class="list">
+                    </div>
                 </div>
                 <div class="drawingpart">
                     <div class="head">一画一言
@@ -224,46 +289,176 @@
                 <div class="head">我来插个嘴</div>
                 <div class="sort">
                     <ul class="">
-                        <li>
+                        <li class="jsselected2 numest">
                             <a>插嘴数量</a>
                         </li>
-                        <li>
+                        <li class="newest">
                             <a>插嘴时间</a>
                         </li>
-                        <li>
+                        <li class="oldest">
                             <a>开头时间</a>
                         </li>
                     </ul>
                 </div>
                 <div class="list"></div>
             </div>
-            <div class="drawing page"></div>
+            <div class="drawing page">
+                <div class="displaydrawings">
+
+                </div>
+                <div class="pubulisharea">
+                    <input type="button" value="我要发布">
+                </div>
+                <div class="displayall">
+                    <div class="sort">
+                        <ul>
+                            <li>
+                                <a>时间顺序</a>
+                            </li>
+                            <li>
+                                <a>
+                                    最受欢迎
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="list"></div>
+                </div>
+            </div>
             <div class="talking page"></div>
-            <div class="myplace page"></div>
+            <div class="myplace page">
+                <div class="userdetail">
+                    <img src="/avatar/{{login_user}}80?height=80" , style="border-radius: 50%; position: absolute; height: 80px; width: 80px;">
+                    <div class="buttons">
+                        <input type="button" value="我的关注">
+                        <input type="button" value="我的收藏">
+                    </div>
+                </div>
+                <div class="leftcolumn"></div>
+                <div class="rightpannel">
+                    <div class="all"></div>
+                    <div class=""></div>
+                </div>
+            </div>
         </div>
     </div>
     <script>
-        //generate the content of home page
-        function homepage() {
-            fetch('/home', {
-                method: 'GET'
-            }).then(res => {
-                console.log(res)
-            })
-        }
+        //handle the data in discuss area
 
-        function generateitem(data) {
-
-        }
 
         function senddata() {
             let data = document.querySelector("textarea").value;
-            if (data !== '') {
-                fetch('/handledata', {
-                    method: 'POST',
+            if (data !== "") {
+                fetch("/handledata", {
+                    method: "POST",
+                    credentials: "include",
                     body: data
-                })
+                }).then(() => {
+                    window.location.href = "/home";
+                });
             }
         }
+
+        function clearinput() {
+            document.querySelector("textarea").value = "";
+        }
+
+        document
+            .querySelector("input[name='publish']")
+            .addEventListener("click", senddata);
+        document
+            .querySelector("input[name='cancel']")
+            .addEventListener("click", clearinput);
+
+        //column change function
+        let main = document.querySelector(".home");
+        let discuss = document.querySelector(".discuss");
+        let drawing = document.querySelector(".drawing");
+        let talking = document.querySelector(".talking");
+        let myplace = document.querySelector(".myplace");
+        for (let i = 1; i < 6; i++) {
+            let button = document.querySelector(".maincolumns li:nth-child(" + i + ")");
+            button.addEventListener("click", function () {
+                document.querySelector(".jsselected").classList.remove("jsselected");
+                let shown = document.querySelector(".page:nth-child(" + i + ")");
+                this.classList.add("jsselected");
+                document.querySelector(".shown").classList.remove("shown");
+                shown.classList.add("shown");
+            });
+        }
+        for (let i = 1; i < 4; i++) {
+            let button = document.querySelector(".discuss li:nth-child(" + i + ")");
+            button.addEventListener("click", function () {
+                document.querySelector(".jsselected2").classList.remove("jsselected2");
+                this.classList.add("jsselected2");
+            })
+        }
+        //generate the content of home page
+
+        function request_discuss() {
+            fetch("/discussdata/newest", {
+                method: "GET",
+                credentials: "include",
+                headers: { Accept: "application/json", "Content-Type": "application/json" }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    let num = 0;
+                    let container = document.querySelector(".discusspart .list");
+                    container.innerHTML = ''
+                    while (data[num]) {
+                        container.appendChild(generate_items_in_discuss(data[num]));
+                        num++;
+                    }
+                });
+        }
+
+        function generate_items_in_discuss(data) {
+            var el = document.createElement("div");
+            var src = '/avatar/' + data[1] + '80?height=80'
+            el.innerHTML =
+                '<div class="discuss_item"><img src="' +
+                src +
+                '"><div class="discuss_content"><p class="">&nbsp;&nbsp&nbsp;&nbsp' +
+                data[0] +
+                '</div><div class="discuss_item_detail"><span>已有' +
+                data[3] +
+                "人插嘴</span><br><span>" +
+                data[2] +
+                "</span></div></div>";
+            console.log(el);
+            return el;
+        }
+
+        request_discuss()
+        function request_talking(sortway) {
+            fetch("/talkdata/" + sortway, {
+                method: "GET",
+                credentials: "include",
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    let num = 0;
+                    let container = document.querySelector(".discuss .list");
+                    container.innerHTML = ''
+                    while (data[num]) {
+                        container.appendChild(generate_items_in_discuss(data[num]));
+                        num++;
+                    }
+                });
+        }
+        request_talking('numest')
+        document.querySelector(".numest").addEventListener("click", function () {
+            request_talking('numest')
+        })
+        document.querySelector(".newest").addEventListener("click", function () {
+            request_talking('newest')
+        })
+        document.querySelector(".oldest").addEventListener("click", function () {
+            request_talking('oldest')
+        })
+
     </script>
 </body>
